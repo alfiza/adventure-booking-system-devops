@@ -4,11 +4,16 @@ services:
     container_name: booking-backend
     ports:
       - "8000:8000"
-    env_file:
-      - ./backend/.env
+    environment:
+      - ENVIRONMENT=dev
+      - MONGODB_URL=mongodb://appuser:apppassword@mongo:27017/booking_system?authSource=booking_system
+      - MONGODB_DB_NAME=booking_system
+      - SECRET_KEY=change-this-in-prod
     networks:
     
       - booking-network
+    depends_on:
+      - mongo
 
   frontend:
     build:
@@ -23,7 +28,25 @@ services:
     networks:
       - booking-network
 
+  mongo:
+    image: mongo:7
+    container_name: booking-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+      - MONGO_INITDB_DATABASE=booking_system
+    volumes:
+      - mongo-data:/data/db
+      - ./docker/mongo/init.js:/docker-entrypoint-initdb.d/init.js:ro
+    networks:
+      - booking-network
+
 networks:
   booking-network:
     driver: bridge
 
+volumes:
+  mongo-data:
