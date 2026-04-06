@@ -1,12 +1,10 @@
+# CI FIX TRIGGER
 name: Backend CI
 
 on:
   push:
-    paths:
-      - "backend/**"
   pull_request:
-    paths:
-      - "backend/**"
+  workflow_dispatch:
 
 jobs:
   test:
