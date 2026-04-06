@@ -1,22 +1,13 @@
-# CI FIX TRIGGER
-name: Backend CI
-
-on:
-  push:
-  pull_request:
-  workflow_dispatch:
-
 jobs:
   test:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: backend
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Debug structure
+        run: ls -R
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -25,14 +16,21 @@ jobs:
 
       - name: Install Dependencies
         run: |
+          cd backend
           pip install -r requirements.txt
           pip install pytest pytest-cov flake8 bandit
 
       - name: Run Lint
-        run: flake8 .
+        run: |
+          cd backend
+          flake8 .
 
       - name: Run Tests
-        run: pytest --cov=app --cov-report=term-missing
+        run: |
+          cd backend
+          pytest --cov=app --cov-report=term-missing
 
       - name: Security Scan
-        run: bandit -r app
+        run: |
+          cd backend
+          bandit -r app
