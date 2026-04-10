@@ -15,7 +15,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - ENVIRONMENT=dev
+      - ENVIRONMENT=local
       - MONGODB_URL=mongodb://appuser:apppassword@mongo:27017/booking_system?authSource=booking_system
       - MONGODB_DB_NAME=booking_system
       - SECRET_KEY=change-this-in-prod
