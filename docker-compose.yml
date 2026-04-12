@@ -1,24 +1,16 @@
-# Explicit version so `build: { context, ... }` validates (Compose file v1 only allows `build: path`).
-#
-# Windows + OneDrive: plain "docker-compose" in PowerShell uses Docker from PATH (BuildKit ON) → fails.
-# Fix ONE of:  BUILDKIT-OFF.txt  |  docker-build-tar.cmd then compose up --no-build  |  .\dc.ps1
-
-
 services:
   backend:
     image: booking-backend:local
-    # Repo-root context + Dockerfile
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: booking-backend
     ports:
       - "8000:8000"
+    env_file:
+      - .env
     environment:
       - ENVIRONMENT=local
-      - MONGODB_URL=mongodb://appuser:apppassword@mongo:27017/booking_system?authSource=booking_system
-      - MONGODB_DB_NAME=booking_system
-      - SECRET_KEY=change-this-in-prod
     networks:
       - booking-network
     depends_on:
@@ -33,7 +25,6 @@ services:
     ports:
       - "3000:5173"
     environment:
-      # Browser calls API on host (published port 8000). Override if needed.
       - VITE_API_URL=http://localhost:8000
     depends_on:
       - backend
@@ -46,10 +37,12 @@ services:
     restart: unless-stopped
     ports:
       - "27017:27017"
+    env_file:
+      - .env
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=example
-      - MONGO_INITDB_DATABASE=booking_system
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGODB_DB_NAME}
     volumes:
       - mongo-data:/data/db
       - ./docker/mongo/init.js:/docker-entrypoint-initdb.d/init.js:ro

@@ -4,6 +4,8 @@ __pycache__/
 *.pyo
 *.pyd
 venv/
+
+# Env files (IMPORTANT)
 .env
 .env.*
 
@@ -22,9 +24,6 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
-
-# Docker
-*.env
 
 # Secrets
 *.pem
